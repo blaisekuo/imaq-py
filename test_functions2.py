@@ -27,12 +27,15 @@ sid = SESSION_ID(0)
 # i switch off between the PIRT and image test icd, but they use the same interface string below
 lcp_cam = C.c_char_p(b'img0') 
 
+
+
 # open interface
 rval = imaq.imgInterfaceOpen(lcp_cam, C.byref(iid))
 
 
 # open session
 rval = imaq.imgSessionOpen(iid, C.byref(sid))
+
 
 # test lines to see the return error code
 #text = C.c_char_p(b'test')
@@ -55,11 +58,7 @@ rval = imaq.imgSnap(sid, C.byref(bufAddr))
 rval = imaq.imgClose(sid, 1)
 rval = imaq.imgClose(iid, 1)
 
-# see the values of the image
-# having a problem with the PIRT detector, only able to get value for 1,000,000 pixels
-# might be a 14-bit to 16-bit problem?
-# need to try assigning just a pointer and reading data in a hex and reconstructing the pixel values
-# have some code for this from ealier work on decoding the raw output from WinIRC
+
 print(image.shape)
 print(image)
 

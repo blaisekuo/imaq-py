@@ -26,11 +26,15 @@ print(rval)
 
 rval = imaq.imgSessionOpen(iid, C.byref(sid))
 
-image = np.zeros((1024*1280),dtype=C.c_uint16)
+#image = np.zeros((1024*1280),dtype=C.c_uint16)
+
+image = C.c_uint16*1310720
+
 #image = np.ndarray(shape=(height*width,), dtype=C.c_uint16)
 
 bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
 
+#bufAddr = C.POINTER(image)
 
 rval = imaq.imgSnap(sid, C.byref(bufAddr))
 
