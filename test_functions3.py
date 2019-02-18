@@ -30,12 +30,8 @@ print(rval)
 
 rval = imaq.imgSessionOpen(iid, C.byref(sid))
 
-#text = C.c_char_p(b'test')
-#imaq.imgShowError(rval, text)
-#print (text.value)
 
-image = np.ndarray(shape=(height,width), dtype=C.c_uint16)
-
+image = np.ndarray(shape=(height*width,), dtype=C.c_uint16)
 
 
 bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
@@ -43,15 +39,22 @@ bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
 
 rval = imaq.imgSnap(sid, C.byref(bufAddr))
 
-
+#text = C.c_char_p(b'test')
+#imaq.imgShowError(rval, text)
+#print (text.value)
 
 rval = imaq.imgClose(sid, 1)
 rval = imaq.imgClose(iid, 1)
 
+
 print(image.shape)
 print(image)
 
-hdu = fits.PrimaryHDU(image)
-hdulist = fits.HDUList([hdu])
-hdulist.writeto(datastore_path + 'test.fits',overwrite=True)
-hdulist.close()
+image2 = np.trim_zeros(image)
+
+print(image2.shape)
+
+#hdu = fits.PrimaryHDU(image)
+#hdulist = fits.HDUList([hdu])
+#hdulist.writeto(datastore_path + 'test.fits',overwrite=True)
+#hdulist.close()
