@@ -2,6 +2,7 @@ import ctypes as C
 import ctypes.util as Cutil
 import numpy as np
 import math
+import time
 import struct
 
 from astropy.io import fits 
@@ -31,18 +32,18 @@ sid = SESSION_ID(0)
 lcp_cam = C.c_char_p(b'img0') 
 
 #hex values for certain commands
-inttime_set = bytearray.fromhex("10 6C")
-frametime_set = bytearray.fromhex("10 6E")
+#inttime_set = bytearray.fromhex("10 6C")
+#frametime_set = bytearray.fromhex("10 6E")
 
-inttime = 1
+inttime = 5
 
-ticks = int(inttime*Clk)
-tickbyte = struct.pack("<i",ticks)
-tickbyte = inttime_set + tickbyte
+#ticks = int(inttime*Clk)
+#tickbyte = struct.pack("<i",ticks)
+#tickbyte = inttime_set + tickbyte
         
-framerate = int((np.maximum(inttime,0.03333334))*Clk + tickbuf) # max rate of 30 Hz (one frame every 33ms).  
-framebyte = struct.pack("<i",framerate) # up to 4 bytes in little endian
-framebyte = frametime_set + framebyte
+#framerate = int((np.maximum(inttime,0.03333334))*Clk + tickbuf) # max rate of 30 Hz (one frame every 33ms).  
+#framebyte = struct.pack("<i",framerate) # up to 4 bytes in little endian
+#framebyte = frametime_set + framebyte
 
 
 
@@ -67,20 +68,24 @@ image = np.ndarray(shape=(height,width), dtype=C.c_uint16)
 bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
 
 
-# take an image snap
-rval = imaq.imgSnap(sid, C.byref(bufAddr))
+for i in range(1):
+    # take an image snap
+    rval = imaq.imgSnap(sid, C.byref(bufAddr))
 
 
-# close session
-rval = imaq.imgClose(sid, 1)
-rval = imaq.imgClose(iid, 1)
+    # close session
+    rval = imaq.imgClose(sid, 1)
+    rval = imaq.imgClose(iid, 1)
 
 
-print(image.shape)
-print(image)
+    #print(image.shape)
+    print("writing frame: " + str(i))
+    #print(image)
 
-#write the image to a fits file
-hdu = fits.PrimaryHDU(image)
-hdulist = fits.HDUList([hdu])
-hdulist.writeto(datastore_path + 'test.fits',overwrite=True)
-hdulist.close()
+    #write the image to a fits file
+    hdu = fits.PrimaryHDU(image)
+    hdulist = fits.HDUList([hdu])
+    hdulist.writeto(datastore_path + 'test-' +  str(inttime) + 's-' + str(i) + '.fits',overwrite=True)
+    hdulist.close()
+
+    time.sleep(inttime+0.5)
