@@ -61,62 +61,32 @@ def SerialSend(cmd2):
     #crc16 = crcmod.mkCrcFun(0x1755b, rev=False, initCrc=0xFFFF, xorOut=0x0000)
     crc16 = crcmod.mkCrcFun(0x1755B,initCrc=0,rev=False,xorOut=0xFFFF)
 
-    #print(cmd2.decode())
-    #cmd = cmd2.decode()
+
     cmd = cmd2
     cmd = cmd.replace(b'\x5c',b'\x5c\x5c').replace(b'\xff',b'\x5c\xff')
     cmd = b'\xff' + cmd
     cmd = b'\x00' + cmd
 
-    print(cmd)
-    print(cmd[0:].hex())
+
 
     crccalc = bytearray.fromhex(cmd[0:].hex())
-    print(crccalc)
-    #a = crc16((crccalc[0]))
-    
-    #print(hex(a))
-    #crccalc = bytearray.fromhex(cmd[1:].hex())
-    #for d in crccalc:
-    #    a = crc16((d),a)
+
     a = hex(crc16(crccalc))
 
     
-    #crc = "".join(map(chr,divmod((a ^ 0xFFFF),256 )))
-    #crc = crc.replace(b'\x5c',b'\x5c\x5c')
-    
     crc=a[2:6]
     crc=bytes.fromhex(crc)
-
-
-
 
     cmd = cmd + crc
     cmd = cmd.replace(b'\x3e',b'\x5c\x3e')
     cmd = b'\x3e' + cmd + b'\x3e'
 
-    print("crc is:")
-    print(crc)
-    print("cmd is:")
-    print(cmd)
-    print(str(cmd))
-
-
-    #print("Command to send to serial:", map(hex,cmd))
-
     print("Command to send to serial:", cmd.hex())
-
-    print(len(cmd))
-    print(cmd)
-    print(cmd.hex())
-    print(bytes(cmd))
-    #print(b)
 
     sendcmd = C.create_string_buffer(bytes(cmd))
     sendsize.value = len(cmd)
     rval = imaq.imgSessionSerialFlush(sid)
     imaq.imgShowError(rval, text)
-#    print("buffer flushed: " + (text.value))
     print("buffer flushed: " + str(text.value))
     if rval != 0:
         print("Not connected to Scicam")
@@ -125,83 +95,15 @@ def SerialSend(cmd2):
     
     rval = imaq.imgSessionSerialWrite(sid, C.byref(sendcmd), C.byref(sendsize), stimeout)
     imaq.imgShowError(rval, text)
-    #print("Sent: " + (text.value))
     print("Sent: " + str(text.value))
     rval = imaq.imgSessionSerialReadBytes(sid, C.byref(sreturn), C.byref(rsize), stimeout)
     imaq.imgShowError(rval, text)
-    #print("Received: " + (text.value))
     print("Received: " + str(text.value))
     rsizeval = rsize.value
     ret = sreturn.raw
 
-    print(bytes(ret))
-    print(rsizeval)
 
 
-    ret=ret.hex()
-    rsizeval=rsizeval*2
-
-    print(ret[2:rsizeval-2])
-
-    if ret[0:2] == '3e' and ret[rsizeval-2:rsizeval] == '3e':
-        if ret[2:4] == 'a0' or ret[2:4] == '20' or ret[2:4] == '00':
-
-            crcalc=ret[2:rsizeval-2]
-
-
-
-#    cmd = cmd2
-#    cmd = cmd.replace(b'\x5c',b'\x5c\x5c').replace(b'\xff',b'\x5c\xff')
-#    cmd = b'\xff' + cmd
-#    cmd = b'\x00' + cmd
-
-#    crccalc = bytearray.fromhex(cmd[0:].hex())
-#    #a = crc16((crccalc[0]))
-    
-#    #print(hex(a))
-#    #crccalc = bytearray.fromhex(cmd[1:].hex())
-#    #for d in crccalc:
-#    #    a = crc16((d),a)
-#    a = hex(crc16(crccalc))
-
-#    #crc = "".join(map(chr,divmod((a ^ 0xFFFF),256 )))
-#    #crc = crc.replace(b'\x5c',b'\x5c\x5c')
-    
-#    crc=a[2:6]
-#    crc=bytes.fromhex(crc)
-
-
-#    cmd = cmd + crc
-#    cmd = cmd.replace(b'\x3e',b'\x5c\x3e')
-#    cmd = b'\x3e' + cmd + b'\x3e'
-
-
-            crccalc = bytes(ret[1:rsizeval-3])
-            a = crc16(bytearray(crccalc[0]))
-            crccalc = str(ret[2:rsizeval-3]).replace(b'\x5c\x5c',b'\x5c').replace(b'\x5c\x3e',b'\x3e').replace(b'\x5c\xff',b'\xff')
-            for d in crccalc:
-                a = crc16(bytearray(d),a)
-                #print d, hex(a), hex(a ^ 0xFFFF)
-                
-            crc = "".join(map(chr,divmod((a ^ 0xFFFF),256 )))
-            crcret = bytes(ret[rsizeval-3:rsizeval-1])
-
-
-            #print crc, crcret
-            if crc == crcret:
-                print("good CRC")
-                serial_ret = str(map("{0:>02x}".format,map(ord,crccalc[1:]))).translate(None,"[]',")
-                print(serial_ret)
-                return serial_ret
-            else:
-                print("bad CRC")
-                return -3
-        else:
-            print("bad ack/nak/null")
-            return -2
-    else:
-        print("incomplete packet?")
-        return -1
 
 SerialSend(tickbyte)
 time.sleep(0.5)
