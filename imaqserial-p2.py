@@ -65,20 +65,43 @@ def SerialSend(cmd2):
     cmd = '\xff' + cmd
     cmd = '\x00' + cmd
 
+    print cmd2
+    print map(hex,cmd)
+
     crccalc = bytes(cmd[0:])
+
+    print crccalc[0]
+
     a = crc16(crccalc[0])
+    print(a)
     crccalc = bytes(cmd[1:])
     for d in crccalc:
         a = crc16(d,a)
 
+    print(map(str,crccalc))
+    print(a)
     crc = "".join(map(chr,divmod((a ^ 0xFFFF),256 )))
     crc = crc.replace('\x5c','\x5c\x5c')
     cmd = cmd + crc
+ 
     cmd = cmd.replace('\x3e','\x5c\x3e')
     cmd = '\x3e' + cmd + '\x3e'
 
+    print "crc is:"
+    print crc
+    print map(str,crc)
+    print "cmd is:"
+    print map(hex,cmd)
+    print map(str,cmd)
+    print(str(cmd))
+    print(bytes(cmd))
+    print cmd
+
+
     print("Command to send to serial:", map(hex,cmd))
-    sendcmd = C.create_string_buffer(str(cmd))
+    print str(cmd)
+    print len(cmd)
+    sendcmd = C.create_string_buffer(bytes(cmd))
     sendsize.value = len(cmd)
     rval = imaq.imgSessionSerialFlush(sid)
     imaq.imgShowError(rval, text)

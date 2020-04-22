@@ -77,8 +77,10 @@ for d in crccalc:
 
 # add crc16 to cmd
 crc = "".join(map(chr,divmod((a ^ 0xFFFF),256 )))
-print(crc)
+print(map(str,crc))
 crc = crc.replace('\x5c','\x5c\x5c')
+print("crc is:" + crc)
+print(cmd)
 cmd = cmd + crc
 # add escape chars to \x3e
 cmd = cmd.replace(b'\x3e',b'\x5c\x3e')
