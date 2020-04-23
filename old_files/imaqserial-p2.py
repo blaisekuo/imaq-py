@@ -36,7 +36,7 @@ lcp_cam = 'img0'
 inttime_set = bytearray.fromhex("10 6C")
 frametime_set = bytearray.fromhex("10 6E")
 
-inttime = 0.1
+inttime = 10
 
 ticks = int(inttime*Clk)
 tickbyte = struct.pack("<i",ticks)

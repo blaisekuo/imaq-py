@@ -3,11 +3,13 @@ import ctypes.util as Cutil
 import numpy as np
 import math
 import time
-import struct
 import crcmod
+import struct
+
 
 from astropy.io import fits 
 
+import os
 import argparse
 import sys
 
@@ -23,7 +25,8 @@ text = C.c_char_p(b'test')
 
 # i switch off between the PIRT and image test icd, but they use the same interface string below
 #lcp_cam = C.c_char_p('img0') 
-lcp_cam = 'img0'
+#lcp_cam = 'img0'
+lcp_cam = C.c_char_p(b'img0') 
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
@@ -61,10 +64,12 @@ def SerialSend(imaq,cmd2):
 
     crccalc = bytearray.fromhex(cmd[0:].hex())
 
-    a = hex(crc16(crccalc))
+    #a = hex(crc16(crccalc))
+    a = crc16(crccalc)
 
     
-    crc=a[2:6]
+    #crc=a[2:6]
+    crc = "%04x" % a  # outputs a hex string of length 4 
     crc=bytes.fromhex(crc)
 
     cmd = cmd + crc
