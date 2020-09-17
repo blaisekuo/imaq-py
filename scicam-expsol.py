@@ -137,7 +137,7 @@ def main():
 
 
             #print(image.shape)
-            print("writing frame: " + str(i))
+            print("writing frame: " + str(i) + " " + str(j))
             #print(image)
 
             #write the image to a fits file
