@@ -33,7 +33,7 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 def parse_arguments():
-     parser = argparse.ArgumentParser(description='Convert Princeton IR Tech 1280 Scicam raw img files into fits',
+    parser = argparse.ArgumentParser(description='Convert Princeton IR Tech 1280 Scicam raw img files into fits',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     if len(sys.argv)==1:
