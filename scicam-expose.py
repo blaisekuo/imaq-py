@@ -3,6 +3,7 @@ import ctypes.util as Cutil
 import numpy as np
 import math
 import time
+import datetime
 
 from astropy.io import fits 
 
@@ -42,6 +43,10 @@ def parse_arguments():
     parser.add_argument('-n','--name', type=str, help='name prefix of exposures')
     parser.add_argument('-s','--shots', type=int, help='number of exposures to take')
     parser.add_argument('-i','--inttime', type=float, help='integration time')
+    parser.add_argument('-r','--series', type=str, help='series iteration ',default='0')
+    parser.add_argument('-t','--imagetype', type=str, help='calibration, science, dark, bias',default='science')
+    parser.add_argument('-m','--samples', type=int, help='number of consective shots to take',default=5)
+    parser.add_argument('-v','--interval', type=float, help='interval between series or shots in seconds',default=60.0)
     return parser.parse_args()
     
 def dir_path(path):
@@ -59,6 +64,10 @@ def main():
     prefix = parsed_args.name
     shots = parsed_args.shots
     inttime = parsed_args.inttime
+    series = parsed_args.series
+    imagetype = parsed_args.imagetype
+    samples =  parsed_args.samples
+    interval = parsed_args.interval
 
     #Find imaq dll drivers
     imaqlib_path = Cutil.find_library('imaq')
@@ -111,27 +120,32 @@ def main():
 
 
     for i in range(shots):
-        # take an image snap
-        rval = imaq.imgSnap(sid, C.byref(bufAddr))
+        for j in range(samples):
+
+            #taketime
+            timestamp=datetime.datetime.utcnow().isoformat()
+
+            # take an image snap
+            rval = imaq.imgSnap(sid, C.byref(bufAddr))
 
 
-        # close session
-        rval = imaq.imgClose(sid, 1)
-        rval = imaq.imgClose(iid, 1)
+            # close session
+            rval = imaq.imgClose(sid, 1)
+            rval = imaq.imgClose(iid, 1)
 
 
-        #print(image.shape)
-        print("writing frame: " + str(i))
-        #print(image)
+            #print(image.shape)
+            print("writing frame: " + str(i))
+            #print(image)
 
-        #write the image to a fits file
-        hdu = fits.PrimaryHDU(image)
-        hdulist = fits.HDUList([hdu])
-        hdulist.writeto(datastore_path + "/" + prefix +  '-' + str(inttime) + 's-' +  str(i) + '.fits',overwrite=False)
-        hdulist.close()
+            #write the image to a fits file
+            hdu = fits.PrimaryHDU(image)
+            hdulist = fits.HDUList([hdu])
+            hdulist.writeto(datastore_path + "/" + prefix +  '-' + str(inttime) + 's-' +  str(i) + '.fits',overwrite=False)
+            hdulist.close()
 
-        time.sleep(inttime+0.5)
-        #time.sleep(1.0)
+            time.sleep(inttime+0.5)
+        time.sleep(interval-(samples*(inttime+0.5)))
 
 def maintest():
     parsed_args = parse_arguments()

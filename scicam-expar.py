@@ -39,11 +39,14 @@ def parse_arguments():
         parser.print_help(sys.stderr)
         sys.exit(1)
 
-    parser.add_argument('-p','--path', type=dir_path, help='path of the raw img files')
-    parser.add_argument('-n','--name', type=str, help='name prefix of exposures')
-    parser.add_argument('-r','--series', type=str, help='series',default='0')
-    parser.add_argument('-s','--shots', type=int, help='number of exposures to take')
-    parser.add_argument('-i','--inttime', type=float, help='integration time')
+    parser.add_argument('-p','--path', type=dir_path, help='path of the raw img files',default='new_exposures')
+    parser.add_argument('-n','--name', type=str, help='name prefix of exposures',default='ar')
+    parser.add_argument('-r','--series', type=str, help='series iteration',default='0')
+    parser.add_argument('-i','--inttime', type=float, help='integration time',default=0.5)
+    parser.add_argument('-s','--shots', type=int, help='number of exposures to take',default=1)
+    parser.add_argument('-t','--imagetype', type=str, help='calibration, science, dark, bias',default='calibration')
+    parser.add_argument('-m','--samples', type=int, help='number of consective shots to take',default=5)
+    parser.add_argument('-v','--interval', type=float, help='interval between series or shots in seconds',default=30.0)
     return parser.parse_args()
     
 def dir_path(path):
@@ -62,6 +65,9 @@ def main():
     shots = parsed_args.shots
     inttime = parsed_args.inttime
     series = parsed_args.series
+    imagetype = parsed_args.imagetype
+    samples = parsed_args.samples
+    interval = parsed_args.interval
 
     #Find imaq dll drivers
     imaqlib_path = Cutil.find_library('imaq')
@@ -114,7 +120,7 @@ def main():
 
 
     for i in range(shots):
-        for j in range(5):
+        for j in range(samples):
 
             #taketime
             timestamp=datetime.datetime.utcnow().isoformat()
@@ -140,7 +146,7 @@ def main():
             hdr['DATE'] = timestamp
             hdr['OBJECT'] = prefix
             hdr['OBSERVER'] = 'blaise'
-            hdr['IMAGETYP'] = 'calibration'
+            hdr['IMAGETYP'] = imagetype
 
             hdulist = fits.HDUList([hdu])
             hdulist.writeto(datastore_path + "/" + prefix +  '-' + series + '-' + str(inttime) + 's-' +  str(i) + '-' + str(j) + '.fits',overwrite=False)
@@ -149,7 +155,7 @@ def main():
             hdulist.close()
 
             time.sleep(inttime+0.5)
-        time.sleep(25.0)
+        time.sleep(interval-(samples*(inttime+0.5)))
 
 def maintest():
     parsed_args = parse_arguments()
