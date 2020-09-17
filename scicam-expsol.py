@@ -131,7 +131,7 @@ def main():
         hdulist.close()
 
         time.sleep(inttime+0.5)
-        #time.sleep(1.0)
+        time.sleep(59.0)
 
 def maintest():
     parsed_args = parse_arguments()

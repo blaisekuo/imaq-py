@@ -111,27 +111,28 @@ def main():
 
 
     for i in range(shots):
-        # take an image snap
-        rval = imaq.imgSnap(sid, C.byref(bufAddr))
+        for j in range(5):
+            # take an image snap
+            rval = imaq.imgSnap(sid, C.byref(bufAddr))
 
 
-        # close session
-        rval = imaq.imgClose(sid, 1)
-        rval = imaq.imgClose(iid, 1)
+            #    close session
+            rval = imaq.imgClose(sid, 1)
+            rval = imaq.imgClose(iid, 1)
 
 
-        #print(image.shape)
-        print("writing frame: " + str(i))
-        #print(image)
+            #print(image.shape)
+            print("writing frame: " + str(i) + " " + str(j))
+            #print(image)
 
-        #write the image to a fits file
-        hdu = fits.PrimaryHDU(image)
-        hdulist = fits.HDUList([hdu])
-        hdulist.writeto(datastore_path + "/" + prefix +  '-' + str(inttime) + 's-' +  str(i) + '.fits',overwrite=False)
-        hdulist.close()
+            #write the image to a fits file
+            hdu = fits.PrimaryHDU(image)
+            hdulist = fits.HDUList([hdu])
+            hdulist.writeto(datastore_path + "/" + prefix +  '-' + str(inttime) + 's-' +  str(i) + '-' + str(j) + '.fits',overwrite=False)
+            hdulist.close()
 
-        time.sleep(inttime+0.5)
-        #time.sleep(1.0)
+            time.sleep(inttime+0.5)
+        time.sleep(25.0)
 
 def maintest():
     parsed_args = parse_arguments()
