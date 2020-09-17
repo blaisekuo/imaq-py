@@ -33,16 +33,17 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Convert Princeton IR Tech 1280 Scicam raw img files into fits')
+    parser = argparse.ArgumentParser(description='Convert Princeton IR Tech 1280 Scicam raw img files into fits',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     
     if len(sys.argv)==1:
         parser.print_help(sys.stderr)
         sys.exit(1)
 
-    parser.add_argument('-p','--path', type=dir_path, help='path of the raw img files')
-    parser.add_argument('-n','--name', type=str, help='name prefix of exposures')
-    parser.add_argument('-s','--shots', type=int, help='number of exposures to take')
-    parser.add_argument('-i','--inttime', type=float, help='integration time')
+    parser.add_argument('-p','--path', type=dir_path, help='path of the raw img files', default='new_exposures')
+    parser.add_argument('-n','--name', type=str, help='name prefix of exposures',default='science')
+    parser.add_argument('-s','--shots', type=int, help='number of exposures to take',default=1)
+    parser.add_argument('-i','--inttime', type=float, help='integration time',default=0.5)
     parser.add_argument('-r','--series', type=str, help='series iteration ',default='0')
     parser.add_argument('-t','--imagetype', type=str, help='calibration, science, dark, bias',default='science')
     parser.add_argument('-m','--samples', type=int, help='number of consective shots to take',default=5)
