@@ -152,7 +152,7 @@ def main():
             hdr['IMAGETYP'] = imagetype
 
             hdulist = fits.HDUList([hdu])
-            hdulist.writeto(datastore_path + "/" + prefix +  '-' + str(inttime) + 's-' +  str(i) + '.fits',overwrite=False)
+            hdulist.writeto(datastore_path + "/" + prefix +  '-' + series + '-' + str(inttime) + 's-' +  str(i) + '-' + str(j) + '.fits',overwrite=False)
             hdulist.close()
 
             time.sleep(inttime+0.5)
