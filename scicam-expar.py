@@ -135,7 +135,7 @@ def main():
             hdu = fits.PrimaryHDU(image)
 
             #headers
-            hdr = hdu[0].header  # the primary HDU header
+            hdr = hdu.header  # the primary HDU header
             hdr['EXPTIME'] = inttime
             hdr['DATE'] = timestamp
             hdr['OBJECT'] = prefix
