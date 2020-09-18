@@ -47,7 +47,7 @@ def parse_arguments():
     parser.add_argument('-r','--series', type=str, help='series iteration ',default='0')
     parser.add_argument('-t','--imagetype', type=str, help='calibration, science, dark, bias',default='science')
     parser.add_argument('-m','--samples', type=int, help='number of consective shots to take',default=5)
-    parser.add_argument('-v','--interval', type=float, help='interval between series or shots in seconds',default=60.0)
+    parser.add_argument('-v','--interval', type=float, help='interval between series or shots in seconds',default=5.0)
     return parser.parse_args()
     
 def dir_path(path):
