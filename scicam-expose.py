@@ -141,6 +141,15 @@ def main():
 
             #write the image to a fits file
             hdu = fits.PrimaryHDU(image)
+
+            #headers
+            hdr = hdu.header  # the primary HDU header
+            hdr['EXPTIME'] = inttime
+            hdr['DATE'] = timestamp
+            hdr['OBJECT'] = prefix
+            hdr['OBSERVER'] = 'blaise'
+            hdr['IMAGETYP'] = imagetype
+
             hdulist = fits.HDUList([hdu])
             hdulist.writeto(datastore_path + "/" + prefix +  '-' + series + '-' + str(inttime) + 's-' +  str(i) + '-' + str(j) + '.fits',overwrite=False)
             hdulist.close()
