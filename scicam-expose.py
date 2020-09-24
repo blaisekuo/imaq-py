@@ -116,18 +116,17 @@ def main():
     # open session
     rval = imaq.imgSessionOpen(iid, C.byref(sid))
 
+    # for the image test icd use C.c_unit8 and 1024x1024
+    image = np.ndarray(shape=(height,width), dtype=C.c_uint16)
+
+    #
+    # set up pointer for the buffer
+    bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
+
 
     for i in range(shots):
         for j in range(samples):
 
-
-    
-            # for the image test icd use C.c_unit8 and 1024x1024
-            image = np.ndarray(shape=(height,width), dtype=C.c_uint16)
-
-
-            # set up pointer for the buffer
-            bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
 
             #taketime
             timestamp=datetime.datetime.utcnow().isoformat()
