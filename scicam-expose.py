@@ -101,6 +101,14 @@ def main():
 
 
 
+
+
+
+    # test lines to see the return error code
+    #text = C.c_char_p(b'test')
+    #imaq.imgShowError(rval, text)
+    #print (text.value)
+
     # open interface
     rval = imaq.imgInterfaceOpen(lcp_cam, C.byref(iid))
 
@@ -109,17 +117,11 @@ def main():
     rval = imaq.imgSessionOpen(iid, C.byref(sid))
 
 
-    # test lines to see the return error code
-    #text = C.c_char_p(b'test')
-    #imaq.imgShowError(rval, text)
-    #print (text.value)
-
-
-
-
     for i in range(shots):
         for j in range(samples):
 
+
+    
             # for the image test icd use C.c_unit8 and 1024x1024
             image = np.ndarray(shape=(height,width), dtype=C.c_uint16)
 
@@ -134,9 +136,7 @@ def main():
             rval = imaq.imgSnap(sid, C.byref(bufAddr))
 
 
-            # close session
-            rval = imaq.imgClose(sid, 1)
-            rval = imaq.imgClose(iid, 1)
+
 
 
             #print(image.shape)
@@ -161,6 +161,10 @@ def main():
 
             time.sleep(inttime+0.5)
         time.sleep(interval-(samples*(inttime+0.5)))
+
+    # close session
+    rval = imaq.imgClose(sid, 1)
+    rval = imaq.imgClose(iid, 1)
 
 def maintest():
     parsed_args = parse_arguments()
