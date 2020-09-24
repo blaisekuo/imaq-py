@@ -48,6 +48,7 @@ def parse_arguments():
     parser.add_argument('-t','--imagetype', type=str, help='calibration, science, dark, bias, flat',default='science')
     parser.add_argument('-m','--samples', type=int, help='number of consective shots to take',default=5)
     parser.add_argument('-v','--interval', type=float, help='interval between series or shots in seconds',default=5.0)
+    parser.add_argument('-k','--ccdtemp', type=float, help='detector temperature',default=-40.0)
     return parser.parse_args()
     
 def dir_path(path):
@@ -69,6 +70,7 @@ def main():
     imagetype = parsed_args.imagetype
     samples =  parsed_args.samples
     interval = parsed_args.interval
+    ccdtemp = parsed_args.ccdtemp
 
     #Find imaq dll drivers
     imaqlib_path = Cutil.find_library('imaq')
@@ -112,16 +114,18 @@ def main():
     #imaq.imgShowError(rval, text)
     #print (text.value)
 
-    # for the image test icd use C.c_unit8 and 1024x1024
-    image = np.ndarray(shape=(height,width), dtype=C.c_uint16)
 
-
-    # set up pointer for the buffer
-    bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
 
 
     for i in range(shots):
         for j in range(samples):
+
+            # for the image test icd use C.c_unit8 and 1024x1024
+            image = np.ndarray(shape=(height,width), dtype=C.c_uint16)
+
+
+            # set up pointer for the buffer
+            bufAddr = image.ctypes.data_as(C.POINTER(C.c_long))
 
             #taketime
             timestamp=datetime.datetime.utcnow().isoformat()
@@ -149,6 +153,7 @@ def main():
             hdr['OBJECT'] = prefix
             hdr['OBSERVER'] = 'blaise'
             hdr['IMAGETYP'] = imagetype
+            hdr['CCD-TEMP'] = ccdtemp
 
             hdulist = fits.HDUList([hdu])
             hdulist.writeto(datastore_path + "/" + prefix +  '-' + series + '-' + str(inttime) + 's-' +  str(i) + '-' + str(j) + '.fits',overwrite=False)
