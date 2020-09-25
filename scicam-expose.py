@@ -158,8 +158,8 @@ def main():
             hdulist.writeto(datastore_path + "/" + prefix +  '-' + series + '-' + str(inttime) + 's-' +  str(i) + '-' + str(j) + '.fits',overwrite=False)
             hdulist.close()
 
-            time.sleep(inttime+0.5)
-        time.sleep(interval-(samples*(inttime+0.5)))
+            #time.sleep(inttime+0.5)
+        #time.sleep(interval-(samples*(inttime+0.5)))
 
     # close session
     rval = imaq.imgClose(sid, 1)
