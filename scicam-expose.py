@@ -159,7 +159,7 @@ def main():
             hdulist.close()
 
             #time.sleep(inttime+0.5)
-        #time.sleep(interval-(samples*(inttime+0.5)))
+        time.sleep(interval-(samples*(inttime)))
 
     # close session
     rval = imaq.imgClose(sid, 1)
